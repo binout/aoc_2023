@@ -44,15 +44,16 @@ def _mapping(lines: list[str]) -> Mapping:
 
 
 def lowest_seed_location(text) -> int:
-    lines = text.splitlines()
-    seeds = []
+    lines = [line for line in text.splitlines() if line.strip() != ""]
+    seeds = [int(seed) for seed in lines[0].split(":")[1].split()]
+    print(f"Found {len(seeds)} seeds")
+    return _compute_lowest_seed_location(lines[1:], seeds)
+
+
+def _compute_lowest_seed_location(lines: list[str], seeds: list[int]) -> int:
     maps = []
     current_map = []
     for line in lines:
-        if "seeds:" in line:
-            seeds = [int(seed) for seed in line.split(":")[1].split()]
-        if line.strip() == "":
-            continue
         if "map:" in line.strip():
             current_map = []
             maps.append(current_map)
@@ -69,7 +70,20 @@ def _compute_location(seed: int, mappings: list[Mapping]) -> int:
     return current_position
 
 
+def lowest_seed_location_with_range(text) -> int:
+    lines = [line for line in text.splitlines() if line.strip() != ""]
+    seed_ranges = [int(seed) for seed in lines[0].split(":")[1].split()]
+    seeds = []
+    for i in range(0, len(seed_ranges), 2):
+        for j in range(seed_ranges[i], seed_ranges[i]+seed_ranges[i+1]):
+            seeds.append(j)
+    print(f"Found {len(seeds)} seeds")
+    return _compute_lowest_seed_location(lines[1:], seeds)
+
+
 if __name__ == "__main__":
     input_text = retrieve_intput(day=5)
     print(f"lowest_seed_location={lowest_seed_location(input_text)}")
+    print(f"lowest_seed_location_with_range={lowest_seed_location_with_range(input_text)}")
+
 
